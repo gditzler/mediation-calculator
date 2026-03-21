@@ -1,7 +1,7 @@
 {
   "productName": "Gladice",
   "version": "0.1.0",
-  "identifier": "com.gladice.app",
+  "identifier": "com.gladice.mediation",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
