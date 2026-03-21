@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { addRound, updateRound as apiUpdateRound, deleteRound } from "../api";
 import { RoundInputRow } from "./RoundInputRow";
 import type { Round, AddRoundInput } from "../types";
@@ -15,6 +15,8 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editVal1, setEditVal1] = useState("");
   const [editVal2, setEditVal2] = useState("");
+  const editRef1 = useRef<HTMLInputElement>(null);
+  const editRef2 = useRef<HTMLInputElement>(null);
 
   const committedRounds = rounds.filter((r) => !r.is_speculative);
   const hasStandardWithBoth = committedRounds.some(
@@ -80,7 +82,23 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
     }
   };
 
-  const handleEditKeyDown = (e: React.KeyboardEvent, round: Round) => {
+  const handleEditKeyDown1 = (e: React.KeyboardEvent, round: Round) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      editRef2.current?.focus();
+    }
+    if (e.key === "Enter") saveEdit(round);
+    if (e.key === "Escape") setEditingId(null);
+  };
+
+  const handleEditKeyDown2 = (e: React.KeyboardEvent, round: Round) => {
+    if (e.key === "Tab" && e.shiftKey) {
+      e.preventDefault();
+      editRef1.current?.focus();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      saveEdit(round);
+    }
     if (e.key === "Enter") saveEdit(round);
     if (e.key === "Escape") setEditingId(null);
   };
@@ -166,19 +184,21 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
           {editingId === round.id ? (
             <>
               <input
+                ref={editRef1}
                 className="text-right px-2 py-1 rounded text-sm outline-none"
                 style={{ background: "var(--bg-input)", border: "1px solid var(--border)", color: "var(--demand)" }}
                 value={editVal1}
                 onChange={(e) => setEditVal1(e.target.value)}
-                onKeyDown={(e) => handleEditKeyDown(e, round)}
+                onKeyDown={(e) => handleEditKeyDown1(e, round)}
                 autoFocus
               />
               <input
+                ref={editRef2}
                 className="text-right px-2 py-1 rounded text-sm outline-none"
                 style={{ background: "var(--bg-input)", border: "1px solid var(--border)", color: "var(--offer)" }}
                 value={editVal2}
                 onChange={(e) => setEditVal2(e.target.value)}
-                onKeyDown={(e) => handleEditKeyDown(e, round)}
+                onKeyDown={(e) => handleEditKeyDown2(e, round)}
               />
               <div className="text-right font-semibold" style={{ color: "var(--text-muted)" }}>
                 {!isNaN(parseFloat(editVal1)) && !isNaN(parseFloat(editVal2))

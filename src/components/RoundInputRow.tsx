@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface RoundInputRowProps {
   allowBracket: boolean;
@@ -26,6 +26,8 @@ export function RoundInputRow({
   const [val1, setVal1] = useState("");
   const [val2, setVal2] = useState("");
   const [proposedBy, setProposedBy] = useState<"plaintiff" | "defendant">("plaintiff");
+  const input1Ref = useRef<HTMLInputElement>(null);
+  const input2Ref = useRef<HTMLInputElement>(null);
 
   const v1 = parseFloat(val1);
   const v2 = parseFloat(val2);
@@ -46,11 +48,24 @@ export function RoundInputRow({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === "Tab") {
+  const handleKeyDown1 = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      input2Ref.current?.focus();
+    }
+    if (e.key === "Enter" && bothValid) handleSubmit();
+    if (e.key === "Escape") onCancel();
+  };
+
+  const handleKeyDown2 = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab" && e.shiftKey) {
+      e.preventDefault();
+      input1Ref.current?.focus();
+    } else if (e.key === "Tab") {
       e.preventDefault();
       if (bothValid) handleSubmit();
     }
+    if (e.key === "Enter" && bothValid) handleSubmit();
     if (e.key === "Escape") onCancel();
   };
 
@@ -102,21 +117,23 @@ export function RoundInputRow({
           —
         </div>
         <input
+          ref={input1Ref}
           className="px-2 py-1.5 rounded text-sm text-right outline-none"
           style={inputStyle}
           placeholder={roundType === "standard" ? "Demand" : "Bracket High"}
           value={val1}
           onChange={(e) => setVal1(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onKeyDown={handleKeyDown1}
           autoFocus
         />
         <input
+          ref={input2Ref}
           className="px-2 py-1.5 rounded text-sm text-right outline-none"
           style={inputStyle}
           placeholder={roundType === "standard" ? "Offer" : "Bracket Low"}
           value={val2}
           onChange={(e) => setVal2(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onKeyDown={handleKeyDown2}
         />
         <div className="text-sm text-right font-semibold" style={{ color: "var(--text-muted)" }}>
           {midpoint !== null ? `$${midpoint.toLocaleString()}` : "—"}

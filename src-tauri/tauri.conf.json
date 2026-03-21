@@ -1,5 +1,5 @@
 {
-  "productName": "Gladice",
+  "productName": "Mediation Tracker",
   "version": "0.1.0",
   "identifier": "com.gladice.mediation",
   "build": {
@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "Gladice",
+        "title": "Mediation Tracker",
         "width": 1200,
         "height": 800,
         "minWidth": 900,

@@ -21,7 +21,7 @@ function AppContent() {
           borderBottom: "1px solid var(--border)",
         }}
       >
-        <span className="font-bold text-lg">Gladice</span>
+        <span className="font-bold text-lg">Mediation Tracker</span>
         <ThemeSelector />
       </div>
       <TabBar />
