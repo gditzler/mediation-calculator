@@ -3,6 +3,7 @@ import { TabProvider, useTabs } from "./context/TabContext";
 import { ThemeSelector } from "./components/ThemeSelector";
 import { TabBar } from "./components/TabBar";
 import { LandingPage } from "./components/LandingPage";
+import { MediationWorkspace } from "./components/MediationWorkspace";
 
 function AppContent() {
   const { state } = useTabs();
@@ -26,10 +27,12 @@ function AppContent() {
       <TabBar />
       <div>
         {activeTab?.type === "home" && <LandingPage />}
-        {activeTab?.type === "mediation" && (
-          <div className="p-8 text-center" style={{ color: "var(--text-muted)" }}>
-            Mediation view for ID: {activeTab.mediationId}
-          </div>
+        {activeTab?.type === "mediation" && activeTab.mediationId && (
+          <MediationWorkspace
+            key={activeTab.mediationId}
+            mediationId={activeTab.mediationId}
+            tabId={activeTab.id}
+          />
         )}
       </div>
     </div>
