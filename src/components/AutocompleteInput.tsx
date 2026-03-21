@@ -29,14 +29,25 @@ export function AutocompleteInput({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
   const handleChange = (val: string) => {
     onChange(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       if (val.length > 0) {
-        const results = await autocompleteField(field, val);
-        setSuggestions(results);
-        setShowSuggestions(results.length > 0);
+        try {
+          const results = await autocompleteField(field, val);
+          setSuggestions(results);
+          setShowSuggestions(results.length > 0);
+        } catch {
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
       } else {
         setSuggestions([]);
         setShowSuggestions(false);

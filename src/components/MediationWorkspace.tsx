@@ -18,36 +18,50 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
   const autosaveTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const load = useCallback(async () => {
-    const [med, rds] = await Promise.all([
-      getMediation(mediationId),
-      getRounds(mediationId),
-    ]);
-    setMediation(med);
-    setRounds(rds);
-    const label =
-      med.plaintiff && med.defendant
-        ? `${med.plaintiff} v. ${med.defendant}`
-        : "New Mediation";
-    dispatch({ type: "UPDATE_LABEL", tabId, label });
+    try {
+      const [med, rds] = await Promise.all([
+        getMediation(mediationId),
+        getRounds(mediationId),
+      ]);
+      setMediation(med);
+      setRounds(rds);
+      const label =
+        med.plaintiff && med.defendant
+          ? `${med.plaintiff} v. ${med.defendant}`
+          : "New Mediation";
+      dispatch({ type: "UPDATE_LABEL", tabId, label });
+    } catch (err) {
+      console.error("Failed to load mediation:", err);
+    }
   }, [mediationId, tabId, dispatch]);
 
   useEffect(() => {
     load();
   }, [load]);
 
+  useEffect(() => {
+    return () => {
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    };
+  }, []);
+
   const autosave = useCallback(
     (updated: Mediation) => {
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
       autosaveTimer.current = setTimeout(async () => {
-        const now = new Date().toISOString();
-        const toSave = { ...updated, updated_at: now };
-        await updateMediation(toSave);
-        setMediation(toSave);
-        const label =
-          toSave.plaintiff && toSave.defendant
-            ? `${toSave.plaintiff} v. ${toSave.defendant}`
-            : "New Mediation";
-        dispatch({ type: "UPDATE_LABEL", tabId, label });
+        try {
+          const now = new Date().toISOString();
+          const toSave = { ...updated, updated_at: now };
+          await updateMediation(toSave);
+          setMediation(toSave);
+          const label =
+            toSave.plaintiff && toSave.defendant
+              ? `${toSave.plaintiff} v. ${toSave.defendant}`
+              : "New Mediation";
+          dispatch({ type: "UPDATE_LABEL", tabId, label });
+        } catch (err) {
+          console.error("Failed to save mediation:", err);
+        }
       }, 1000);
     },
     [tabId, dispatch]
