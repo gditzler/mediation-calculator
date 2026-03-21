@@ -20,9 +20,11 @@ impl Database {
     }
 
     fn run_migrations(&self) -> SqlResult<()> {
-        let sql = include_str!("../migrations/001_initial.sql");
         let conn = self.conn.lock().unwrap();
+        let sql = include_str!("../migrations/001_initial.sql");
         conn.execute_batch(sql)?;
+        // 002: add mediation_date column to existing databases
+        let _ = conn.execute_batch(include_str!("../migrations/002_add_mediation_date.sql"));
         Ok(())
     }
 
