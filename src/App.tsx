@@ -2,6 +2,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { TabProvider, useTabs } from "./context/TabContext";
 import { ThemeSelector } from "./components/ThemeSelector";
 import { TabBar } from "./components/TabBar";
+import { LandingPage } from "./components/LandingPage";
 
 function AppContent() {
   const { state } = useTabs();
@@ -23,15 +24,12 @@ function AppContent() {
         <ThemeSelector />
       </div>
       <TabBar />
-      <div className="p-8 text-center" style={{ color: "var(--text-muted)" }}>
-        {activeTab?.type === "home" && (
-          <span>Home — select or open a mediation to get started.</span>
-        )}
+      <div>
+        {activeTab?.type === "home" && <LandingPage />}
         {activeTab?.type === "mediation" && (
-          <span>Mediation view for ID: {activeTab.mediationId}</span>
-        )}
-        {!activeTab && (
-          <span>App shell ready — components coming next.</span>
+          <div className="p-8 text-center" style={{ color: "var(--text-muted)" }}>
+            Mediation view for ID: {activeTab.mediationId}
+          </div>
         )}
       </div>
     </div>
