@@ -32,6 +32,7 @@ pub struct Round {
     pub created_at: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Setting {
     pub key: String,

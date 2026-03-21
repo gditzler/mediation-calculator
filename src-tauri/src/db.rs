@@ -1,4 +1,4 @@
-use crate::models::{Mediation, MediationSummary, Round, Setting};
+use crate::models::{Mediation, MediationSummary, Round};
 use rusqlite::{params, Connection, Result as SqlResult};
 use std::sync::Mutex;
 

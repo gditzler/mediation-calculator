@@ -47,7 +47,8 @@ pub fn generate_variations(midpoint: f64, current_demand: f64, count: usize) -> 
 }
 
 /// Returns true if at least one round tuple has both demand and offer present
-/// and has round_type == "standard".
+/// and has round_type == "standard". Used by add_round command for bracket validation.
+#[allow(dead_code)]
 pub fn has_standard_round_with_both(
     rounds: &[(Option<f64>, Option<f64>, String)],
 ) -> bool {
