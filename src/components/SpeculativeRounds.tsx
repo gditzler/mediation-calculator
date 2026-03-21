@@ -73,6 +73,12 @@ export function SpeculativeRounds({
   const formatCurrency = (val: number | null) =>
     val != null ? `$${val.toLocaleString()}` : "—";
 
+  const formatRatio = (high: number | null, low: number | null) => {
+    if (high == null || low == null || low === 0) return "—";
+    const ratio = high / low;
+    return `1:${parseFloat(ratio.toFixed(2))}`;
+  };
+
   if (speculativeRounds.length === 0 && !addingSpeculative) return null;
 
   return (
@@ -108,7 +114,7 @@ export function SpeculativeRounds({
           key={round.id}
           className="grid px-4 py-2.5 text-sm items-center"
           style={{
-            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1.5fr 0.5fr",
+            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
             borderBottom: "1px solid var(--speculative-border)",
             borderBottomWidth: "0.5px",
           }}
@@ -137,6 +143,11 @@ export function SpeculativeRounds({
               : round.bracket_high != null && round.bracket_low != null
                 ? formatCurrency(round.bracket_high - round.bracket_low)
                 : "—"}
+          </div>
+          <div className="text-right font-medium italic" style={{ color: "var(--text-muted)" }}>
+            {round.round_type === "standard"
+              ? formatRatio(round.demand, round.offer)
+              : formatRatio(round.bracket_high, round.bracket_low)}
           </div>
           <div className="flex gap-2 justify-end">
             <button
