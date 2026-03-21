@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { getMediation, updateMediation, getRounds } from "../api";
 import { useTabs } from "../context/TabContext";
 import { MetadataPanel } from "./MetadataPanel";
+import { RoundsTable } from "./RoundsTable";
 import { StatusBadge } from "./StatusBadge";
 import type { Mediation, Round } from "../types";
 
@@ -12,7 +13,7 @@ interface MediationWorkspaceProps {
 
 export function MediationWorkspace({ mediationId, tabId }: MediationWorkspaceProps) {
   const [mediation, setMediation] = useState<Mediation | null>(null);
-  const [_rounds, setRounds] = useState<Round[]>([]);
+  const [rounds, setRounds] = useState<Round[]>([]);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const { dispatch } = useTabs();
   const autosaveTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -123,7 +124,14 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
       {/* Metadata panel */}
       <MetadataPanel mediation={mediation} onUpdate={handleFieldUpdate} />
 
-      {/* Placeholder for rounds, chart, variations, notes */}
+      {/* Rounds table */}
+      <RoundsTable
+        mediationId={mediationId}
+        rounds={rounds}
+        onRoundsChange={load}
+      />
+
+      {/* Placeholder for chart, variations, notes */}
       <div
         className="rounded-xl p-8 text-center text-sm"
         style={{
@@ -132,7 +140,7 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
           color: "var(--text-muted)",
         }}
       >
-        Rounds table, chart, variations, and notes coming next.
+        Chart, variations, and notes coming next.
       </div>
     </div>
   );
