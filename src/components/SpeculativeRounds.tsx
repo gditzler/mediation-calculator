@@ -108,7 +108,7 @@ export function SpeculativeRounds({
           key={round.id}
           className="grid px-4 py-2.5 text-sm items-center"
           style={{
-            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 0.5fr",
+            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1.5fr 0.5fr",
             borderBottom: "1px solid var(--speculative-border)",
             borderBottomWidth: "0.5px",
           }}
@@ -128,6 +128,15 @@ export function SpeculativeRounds({
           </div>
           <div className="text-right font-semibold italic">
             {formatCurrency(round.midpoint)}
+          </div>
+          <div className="text-right font-medium italic" style={{ color: "var(--text-muted)" }}>
+            {round.round_type === "standard"
+              ? round.demand != null && round.offer != null
+                ? formatCurrency(round.demand - round.offer)
+                : "—"
+              : round.bracket_high != null && round.bracket_low != null
+                ? formatCurrency(round.bracket_high - round.bracket_low)
+                : "—"}
           </div>
           <div className="flex gap-2 justify-end">
             <button

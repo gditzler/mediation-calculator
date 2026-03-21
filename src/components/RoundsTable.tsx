@@ -123,7 +123,7 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
       <div
         className="grid px-5 py-2 text-xs font-semibold uppercase tracking-wide"
         style={{
-          gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 0.5fr",
+          gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1.5fr 0.5fr",
           color: "var(--text-muted)",
           borderBottom: "1px solid var(--border)",
         }}
@@ -132,6 +132,7 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
         <div className="text-right">Demand / High</div>
         <div className="text-right">Offer / Low</div>
         <div className="text-right">Midpoint</div>
+        <div className="text-right">Gap</div>
         <div></div>
       </div>
 
@@ -141,7 +142,7 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
           key={round.id}
           className="grid px-5 py-3 text-sm items-center"
           style={{
-            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 0.5fr",
+            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1.5fr 0.5fr",
             borderBottom: "1px solid var(--border-light)",
           }}
           onDoubleClick={() => startEdit(round)}
@@ -177,6 +178,11 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
                   ? formatCurrency((parseFloat(editVal1) + parseFloat(editVal2)) / 2)
                   : "—"}
               </div>
+              <div className="text-right font-medium" style={{ color: "var(--text-muted)" }}>
+                {!isNaN(parseFloat(editVal1)) && !isNaN(parseFloat(editVal2))
+                  ? formatCurrency(parseFloat(editVal1) - parseFloat(editVal2))
+                  : "—"}
+              </div>
               <div className="flex gap-1 justify-end">
                 <button className="text-xs" style={{ color: "var(--accent)" }} onClick={() => saveEdit(round)}>✓</button>
                 <button className="text-xs" style={{ color: "var(--text-muted)" }} onClick={() => setEditingId(null)}>✕</button>
@@ -196,6 +202,15 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
               </div>
               <div className="text-right font-semibold">
                 {formatCurrency(round.midpoint)}
+              </div>
+              <div className="text-right font-medium" style={{ color: "var(--text-muted)" }}>
+                {round.round_type === "standard"
+                  ? round.demand != null && round.offer != null
+                    ? formatCurrency(round.demand - round.offer)
+                    : "—"
+                  : round.bracket_high != null && round.bracket_low != null
+                    ? formatCurrency(round.bracket_high - round.bracket_low)
+                    : "—"}
               </div>
               <div></div>
             </>
