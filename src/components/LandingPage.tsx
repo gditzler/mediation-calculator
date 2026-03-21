@@ -1,32 +1,52 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { listMediations, createMediation } from "../api";
 import { useTabs } from "../context/TabContext";
 import { StatusBadge } from "./StatusBadge";
 import type { MediationSummary } from "../types";
 
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export function LandingPage() {
   const [mediations, setMediations] = useState<MediationSummary[]>([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const { dispatch } = useTabs();
 
-  const loadMediations = useCallback(async () => {
-    const filterValue = statusFilter === "all" ? "" : statusFilter;
-    const results = await listMediations(search, filterValue);
-    setMediations(results);
-  }, [search, statusFilter]);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 200);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
-    loadMediations();
-  }, [loadMediations]);
+    let cancelled = false;
+    const filterValue = statusFilter === "all" ? "" : statusFilter;
+    listMediations(debouncedSearch, filterValue).then((results) => {
+      if (!cancelled) setMediations(results);
+    }).catch((err) => {
+      if (!cancelled) console.error("Failed to load mediations:", err);
+    });
+    return () => { cancelled = true; };
+  }, [debouncedSearch, statusFilter]);
 
   const handleNew = async () => {
-    const med = await createMediation();
-    dispatch({
-      type: "OPEN_MEDIATION",
-      mediationId: med.id,
-      label: "New Mediation",
-    });
+    try {
+      const med = await createMediation();
+      dispatch({
+        type: "OPEN_MEDIATION",
+        mediationId: med.id,
+        label: "New Mediation",
+      });
+    } catch (err) {
+      console.error("Failed to create mediation:", err);
+    }
   };
 
   const handleOpen = (med: MediationSummary) => {
@@ -38,15 +58,6 @@ export function LandingPage() {
       type: "OPEN_MEDIATION",
       mediationId: med.id,
       label,
-    });
-  };
-
-  const formatDate = (iso: string) => {
-    const d = new Date(iso);
-    return d.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
     });
   };
 

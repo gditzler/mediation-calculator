@@ -1,3 +1,5 @@
+export type MediationStatus = "in_progress" | "settled" | "impasse" | "adjourned";
+
 export interface Mediation {
   id: string;
   plaintiff: string;
@@ -5,7 +7,7 @@ export interface Mediation {
   defense_firm: string;
   counsel: string;
   mediator: string;
-  status: "in_progress" | "settled" | "impasse" | "adjourned";
+  status: MediationStatus;
   notes: string;
   notes_format: "markdown" | "raw";
   created_at: string;
@@ -17,7 +19,7 @@ export interface MediationSummary {
   plaintiff: string;
   defendant: string;
   mediator: string;
-  status: string;
+  status: MediationStatus;
   updated_at: string;
 }
 
