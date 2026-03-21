@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addRound, updateRound as apiUpdateRound } from "../api";
+import { addRound, updateRound as apiUpdateRound, deleteRound } from "../api";
 import { RoundInputRow } from "./RoundInputRow";
 import type { Round, AddRoundInput } from "../types";
 
@@ -197,7 +197,20 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
               </div>
               <div className="flex gap-1 justify-end">
                 <button className="text-xs" style={{ color: "var(--accent)" }} onClick={() => saveEdit(round)}>✓</button>
-                <button className="text-xs" style={{ color: "var(--text-muted)" }} onClick={() => setEditingId(null)}>✕</button>
+                <button
+                  className="text-xs"
+                  style={{ color: "var(--demand)" }}
+                  title="Delete round"
+                  onClick={async () => {
+                    try {
+                      await deleteRound(round.id);
+                      setEditingId(null);
+                      onRoundsChange();
+                    } catch (err) {
+                      console.error("Failed to delete round:", err);
+                    }
+                  }}
+                >✕</button>
               </div>
             </>
           ) : (
