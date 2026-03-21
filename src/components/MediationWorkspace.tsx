@@ -5,6 +5,9 @@ import { MetadataPanel } from "./MetadataPanel";
 import { RoundsTable } from "./RoundsTable";
 import { SpeculativeRounds } from "./SpeculativeRounds";
 import { StatusBadge } from "./StatusBadge";
+import { ConvergenceChart } from "./ConvergenceChart";
+import { VariationsTable } from "./VariationsTable";
+import { NotesEditor } from "./NotesEditor";
 import type { Mediation, Round } from "../types";
 
 interface MediationWorkspaceProps {
@@ -99,6 +102,11 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
     (r) => r.round_type === "standard" && r.demand != null && r.offer != null
   );
 
+  const allRoundsForVariations = [...committedRounds, ...speculativeRounds];
+  const latestRound = allRoundsForVariations.length > 0
+    ? allRoundsForVariations[allRoundsForVariations.length - 1]
+    : null;
+
   const title =
     mediation.plaintiff && mediation.defendant
       ? `${mediation.plaintiff} v. ${mediation.defendant}`
@@ -153,16 +161,13 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
         />
       )}
 
-      {/* Placeholder for chart, variations, notes */}
-      <div
-        className="rounded-xl p-8 text-center text-sm"
-        style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border)",
-          color: "var(--text-muted)",
-        }}
-      >
-        Chart, variations, and notes coming next.
+      {/* Convergence chart */}
+      <ConvergenceChart rounds={rounds} />
+
+      {/* Bottom row: Variations + Notes */}
+      <div className="grid grid-cols-2 gap-5">
+        <VariationsTable latestRound={latestRound} />
+        <NotesEditor mediation={mediation} onUpdate={handleFieldUpdate} />
       </div>
     </div>
   );
