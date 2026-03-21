@@ -10,6 +10,7 @@ export interface Mediation {
   status: MediationStatus;
   notes: string;
   notes_format: "markdown" | "raw";
+  mediation_date: string;
   created_at: string;
   updated_at: string;
 }

@@ -11,6 +11,7 @@ pub struct Mediation {
     pub status: String,
     pub notes: String,
     pub notes_format: String,
+    pub mediation_date: String,
     pub created_at: String,
     pub updated_at: String,
 }

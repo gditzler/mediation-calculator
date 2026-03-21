@@ -112,6 +112,11 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
     return `1:${parseFloat(ratio.toFixed(2))}`;
   };
 
+  const formatTime = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  };
+
   return (
     <div
       className="rounded-xl"
@@ -147,12 +152,13 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
       <div
         className="grid px-5 py-2 text-xs font-semibold uppercase tracking-wide"
         style={{
-          gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
+          gridTemplateColumns: "0.5fr 1fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
           color: "var(--text-muted)",
           borderBottom: "1px solid var(--border)",
         }}
       >
         <div>Round</div>
+        <div className="text-right">Time</div>
         <div className="text-right">Demand / High</div>
         <div className="text-right">Offer / Low</div>
         <div className="text-right">Midpoint</div>
@@ -167,7 +173,7 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
           key={round.id}
           className="grid px-5 py-3 text-sm items-center"
           style={{
-            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
+            gridTemplateColumns: "0.5fr 1fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
             borderBottom: "1px solid var(--border-light)",
           }}
           onDoubleClick={() => startEdit(round)}
@@ -179,6 +185,10 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
                 B({round.bracket_proposed_by?.[0].toUpperCase()})
               </span>
             )}
+          </div>
+
+          <div className="text-right text-xs" style={{ color: "var(--text-muted)" }}>
+            {formatTime(round.created_at)}
           </div>
 
           {editingId === round.id ? (

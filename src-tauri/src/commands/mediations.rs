@@ -17,6 +17,7 @@ pub fn create_mediation(db: State<'_, Arc<Database>>) -> Result<Mediation, Strin
         status: "in_progress".to_string(),
         notes: String::new(),
         notes_format: "plain".to_string(),
+        mediation_date: String::new(),
         created_at: now.clone(),
         updated_at: now,
     };

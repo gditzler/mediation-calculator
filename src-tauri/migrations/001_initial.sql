@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS mediations (
     status TEXT NOT NULL DEFAULT 'in_progress',
     notes TEXT NOT NULL DEFAULT '',
     notes_format TEXT NOT NULL DEFAULT 'markdown',
+    mediation_date TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );

@@ -71,6 +71,25 @@ export function MetadataPanel({ mediation, onUpdate }: MetadataPanelProps) {
               onChange={(val) => onUpdate(key, val)}
             />
           ))}
+          <div>
+            <label
+              className="block text-xs font-semibold mb-1"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Mediation Date
+            </label>
+            <input
+              type="date"
+              className="w-full px-3 py-1.5 rounded-md text-sm outline-none"
+              style={{
+                background: "var(--bg-input)",
+                border: "1px solid var(--border)",
+                color: "var(--text-primary)",
+              }}
+              value={mediation.mediation_date}
+              onChange={(e) => onUpdate("mediation_date", e.target.value)}
+            />
+          </div>
         </div>
       )}
     </div>

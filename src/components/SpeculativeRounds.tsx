@@ -85,6 +85,11 @@ export function SpeculativeRounds({
     return `1:${parseFloat(ratio.toFixed(2))}`;
   };
 
+  const formatTime = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  };
+
   if (speculativeRounds.length === 0 && !addingSpeculative) return null;
 
   return (
@@ -120,13 +125,16 @@ export function SpeculativeRounds({
           key={round.id}
           className="grid px-4 py-2.5 text-sm items-center"
           style={{
-            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
+            gridTemplateColumns: "0.5fr 1fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
             borderBottom: "1px solid var(--speculative-border)",
             borderBottomWidth: "0.5px",
           }}
         >
           <div className="font-semibold" style={{ color: "var(--speculative-text)" }}>
             {round.round_number}?
+          </div>
+          <div className="text-right text-xs italic" style={{ color: "var(--text-muted)" }}>
+            {formatTime(round.created_at)}
           </div>
           <div className="text-right font-medium italic" style={{ color: "var(--demand)" }}>
             {round.round_type === "standard"

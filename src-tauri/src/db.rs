@@ -31,8 +31,8 @@ impl Database {
     pub fn create_mediation(&self, mediation: &Mediation) -> SqlResult<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
-            "INSERT INTO mediations (id, plaintiff, defendant, defense_firm, counsel, mediator, status, notes, notes_format, created_at, updated_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+            "INSERT INTO mediations (id, plaintiff, defendant, defense_firm, counsel, mediator, status, notes, notes_format, mediation_date, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
             params![
                 mediation.id,
                 mediation.plaintiff,
@@ -43,6 +43,7 @@ impl Database {
                 mediation.status,
                 mediation.notes,
                 mediation.notes_format,
+                mediation.mediation_date,
                 mediation.created_at,
                 mediation.updated_at,
             ],
@@ -53,7 +54,7 @@ impl Database {
     pub fn get_mediation(&self, id: &str) -> SqlResult<Mediation> {
         let conn = self.conn.lock().unwrap();
         conn.query_row(
-            "SELECT id, plaintiff, defendant, defense_firm, counsel, mediator, status, notes, notes_format, created_at, updated_at
+            "SELECT id, plaintiff, defendant, defense_firm, counsel, mediator, status, notes, notes_format, mediation_date, created_at, updated_at
              FROM mediations WHERE id = ?1",
             params![id],
             |row| {
@@ -67,8 +68,9 @@ impl Database {
                     status: row.get(6)?,
                     notes: row.get(7)?,
                     notes_format: row.get(8)?,
-                    created_at: row.get(9)?,
-                    updated_at: row.get(10)?,
+                    mediation_date: row.get(9)?,
+                    created_at: row.get(10)?,
+                    updated_at: row.get(11)?,
                 })
             },
         )
@@ -77,8 +79,8 @@ impl Database {
     pub fn update_mediation(&self, mediation: &Mediation) -> SqlResult<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
-            "UPDATE mediations SET plaintiff = ?1, defendant = ?2, defense_firm = ?3, counsel = ?4, mediator = ?5, status = ?6, notes = ?7, notes_format = ?8, updated_at = ?9
-             WHERE id = ?10",
+            "UPDATE mediations SET plaintiff = ?1, defendant = ?2, defense_firm = ?3, counsel = ?4, mediator = ?5, status = ?6, notes = ?7, notes_format = ?8, mediation_date = ?9, updated_at = ?10
+             WHERE id = ?11",
             params![
                 mediation.plaintiff,
                 mediation.defendant,
@@ -88,6 +90,7 @@ impl Database {
                 mediation.status,
                 mediation.notes,
                 mediation.notes_format,
+                mediation.mediation_date,
                 mediation.updated_at,
                 mediation.id,
             ],
