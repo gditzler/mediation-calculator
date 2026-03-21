@@ -7,9 +7,10 @@ interface RoundsTableProps {
   mediationId: string;
   rounds: Round[];
   onRoundsChange: () => void;
+  onStartWhatIf?: () => void;
 }
 
-export function RoundsTable({ mediationId, rounds, onRoundsChange }: RoundsTableProps) {
+export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf }: RoundsTableProps) {
   const [addingRound, setAddingRound] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editVal1, setEditVal1] = useState("");
@@ -97,6 +98,17 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange }: RoundsTable
           Negotiation Rounds
         </span>
         <div className="flex gap-2">
+          <button
+            className="px-3 py-1 rounded-md text-xs"
+            style={{
+              background: "var(--speculative-bg)",
+              border: "1px solid var(--speculative-border)",
+              color: "var(--speculative-text)",
+            }}
+            onClick={() => onStartWhatIf?.()}
+          >
+            + What-If
+          </button>
           <button
             className="px-3 py-1 rounded-md text-xs"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}

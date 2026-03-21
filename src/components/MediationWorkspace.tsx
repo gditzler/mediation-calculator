@@ -3,6 +3,7 @@ import { getMediation, updateMediation, getRounds } from "../api";
 import { useTabs } from "../context/TabContext";
 import { MetadataPanel } from "./MetadataPanel";
 import { RoundsTable } from "./RoundsTable";
+import { SpeculativeRounds } from "./SpeculativeRounds";
 import { StatusBadge } from "./StatusBadge";
 import type { Mediation, Round } from "../types";
 
@@ -14,6 +15,7 @@ interface MediationWorkspaceProps {
 export function MediationWorkspace({ mediationId, tabId }: MediationWorkspaceProps) {
   const [mediation, setMediation] = useState<Mediation | null>(null);
   const [rounds, setRounds] = useState<Round[]>([]);
+  const [showWhatIf, setShowWhatIf] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const { dispatch } = useTabs();
   const autosaveTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -88,6 +90,15 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
     );
   }
 
+  const committedRounds = rounds.filter((r) => !r.is_speculative);
+  const speculativeRounds = rounds.filter((r) => r.is_speculative);
+  const lastCommittedRound = committedRounds.length > 0
+    ? Math.max(...committedRounds.map((r) => r.round_number))
+    : 0;
+  const hasStandardWithBoth = committedRounds.some(
+    (r) => r.round_type === "standard" && r.demand != null && r.offer != null
+  );
+
   const title =
     mediation.plaintiff && mediation.defendant
       ? `${mediation.plaintiff} v. ${mediation.defendant}`
@@ -129,7 +140,18 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
         mediationId={mediationId}
         rounds={rounds}
         onRoundsChange={load}
+        onStartWhatIf={() => setShowWhatIf(true)}
       />
+
+      {(showWhatIf || speculativeRounds.length > 0) && (
+        <SpeculativeRounds
+          mediationId={mediationId}
+          speculativeRounds={speculativeRounds}
+          lastCommittedRound={lastCommittedRound}
+          allowBracket={hasStandardWithBoth}
+          onRoundsChange={load}
+        />
+      )}
 
       {/* Placeholder for chart, variations, notes */}
       <div
