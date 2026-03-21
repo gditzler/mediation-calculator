@@ -158,6 +158,7 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
           lastCommittedRound={lastCommittedRound}
           allowBracket={hasStandardWithBoth}
           onRoundsChange={load}
+          startAdding={showWhatIf && speculativeRounds.length === 0}
         />
       )}
 

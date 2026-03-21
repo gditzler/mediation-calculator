@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   addRound,
+  deleteRound,
   promoteSpeculativeRounds,
-  discardSpeculativeRounds,
 } from "../api";
 import { RoundInputRow } from "./RoundInputRow";
 import type { Round, AddRoundInput } from "../types";
@@ -12,7 +12,8 @@ interface SpeculativeRoundsProps {
   speculativeRounds: Round[];
   lastCommittedRound: number;
   allowBracket: boolean;
-  onRoundsChange: () => void;
+  onRoundsChange: () => void | Promise<void>;
+  startAdding?: boolean;
 }
 
 export function SpeculativeRounds({
@@ -21,8 +22,13 @@ export function SpeculativeRounds({
   lastCommittedRound,
   allowBracket,
   onRoundsChange,
+  startAdding = false,
 }: SpeculativeRoundsProps) {
-  const [addingSpeculative, setAddingSpeculative] = useState(false);
+  const [addingSpeculative, setAddingSpeculative] = useState(startAdding);
+
+  useEffect(() => {
+    if (startAdding) setAddingSpeculative(true);
+  }, [startAdding]);
 
   const handleAdd = async (data: {
     round_type: "standard" | "bracket";
@@ -46,7 +52,7 @@ export function SpeculativeRounds({
       };
       await addRound(input);
       setAddingSpeculative(false);
-      onRoundsChange();
+      await onRoundsChange();
     } catch (err) {
       console.error("Failed to add speculative round:", err);
     }
@@ -55,18 +61,18 @@ export function SpeculativeRounds({
   const handlePromote = async (roundNumber: number) => {
     try {
       await promoteSpeculativeRounds(mediationId, roundNumber);
-      onRoundsChange();
+      await onRoundsChange();
     } catch (err) {
       console.error("Failed to promote rounds:", err);
     }
   };
 
-  const handleDiscard = async (roundNumber: number) => {
+  const handleDiscard = async (roundId: string) => {
     try {
-      await discardSpeculativeRounds(mediationId, roundNumber);
-      onRoundsChange();
+      await deleteRound(roundId);
+      await onRoundsChange();
     } catch (err) {
-      console.error("Failed to discard rounds:", err);
+      console.error("Failed to discard round:", err);
     }
   };
 
@@ -162,7 +168,7 @@ export function SpeculativeRounds({
               className="text-xs"
               title="Discard"
               style={{ color: "var(--demand)" }}
-              onClick={() => handleDiscard(round.round_number)}
+              onClick={() => handleDiscard(round.id)}
             >
               ✕
             </button>
