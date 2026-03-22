@@ -1,12 +1,14 @@
 import {
-  LineChart,
+  ComposedChart,
   Line,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import type { Round } from "../types";
 
@@ -20,20 +22,17 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
   const committed = rounds.filter((r) => !r.is_speculative);
   const speculative = rounds.filter((r) => r.is_speculative);
 
-  const chartData = committed.map((r) => ({
-    name: `R${r.round_number}`,
-    demand: r.round_type === "standard" ? r.demand : r.bracket_high,
-    offer: r.round_type === "standard" ? r.offer : r.bracket_low,
+  const mapRound = (r: Round, suffix = "") => ({
+    name: `R${r.round_number}${suffix}`,
+    demand: r.demand,
+    offer: r.offer,
     midpoint: r.midpoint,
-  }));
+    bracketRange: r.round_type === "bracket" ? [r.bracket_low, r.bracket_high] as [number | null, number | null] : undefined,
+    isBracket: r.round_type === "bracket",
+  });
 
-  const specData = speculative.map((r) => ({
-    name: `R${r.round_number}?`,
-    demand: r.round_type === "standard" ? r.demand : r.bracket_high,
-    offer: r.round_type === "standard" ? r.offer : r.bracket_low,
-    midpoint: r.midpoint,
-  }));
-
+  const chartData = committed.map((r) => mapRound(r));
+  const specData = speculative.map((r) => mapRound(r, "?"));
   const fullData = [...chartData, ...specData];
 
   const demandColor = getComputedStyle(document.documentElement)
@@ -45,6 +44,14 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
   const mutedColor = getComputedStyle(document.documentElement)
     .getPropertyValue("--text-muted")
     .trim() || "#9ca3af";
+  const bracketColor = "#a855f7";
+
+  // For bracket rounds, compute bar base and height for stacked display
+  const barData = fullData.map((d) => ({
+    ...d,
+    bracketBase: d.bracketRange ? d.bracketRange[0] : null,
+    bracketHeight: d.bracketRange ? (d.bracketRange[1] ?? 0) - (d.bracketRange[0] ?? 0) : null,
+  }));
 
   return (
     <div
@@ -58,7 +65,7 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
         Negotiation Convergence
       </div>
       <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={fullData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+        <ComposedChart data={barData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
           <XAxis
             dataKey="name"
@@ -73,7 +80,11 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
             }
           />
           <Tooltip
-            formatter={(value: number) => [`$${value.toLocaleString()}`, ""]}
+            formatter={(value: number, name: string) => {
+              if (name === "bracketBase") return [null, null];
+              if (name === "bracketHeight") return [`$${value.toLocaleString()}`, "Bracket Range"];
+              return [`$${value.toLocaleString()}`, ""];
+            }}
             contentStyle={{
               background: "var(--bg-card)",
               border: "1px solid var(--border)",
@@ -82,12 +93,19 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
             }}
           />
           <Legend />
+          <Bar dataKey="bracketBase" stackId="bracket" fill="transparent" legendType="none" />
+          <Bar dataKey="bracketHeight" stackId="bracket" name="Bracket" barSize={20}>
+            {barData.map((entry, index) => (
+              <Cell key={index} fill={entry.isBracket ? bracketColor : "transparent"} fillOpacity={0.4} stroke={entry.isBracket ? bracketColor : "none"} strokeWidth={2} />
+            ))}
+          </Bar>
           <Line
             type="monotone"
             dataKey="demand"
             stroke={demandColor}
             strokeWidth={2.5}
             dot={{ fill: demandColor, r: 4 }}
+            connectNulls
             name="Demand"
           />
           <Line
@@ -96,6 +114,7 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
             stroke={offerColor}
             strokeWidth={2.5}
             dot={{ fill: offerColor, r: 4 }}
+            connectNulls
             name="Offer"
           />
           <Line
@@ -107,7 +126,7 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
             dot={{ fill: mutedColor, r: 3 }}
             name="Midpoint"
           />
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );

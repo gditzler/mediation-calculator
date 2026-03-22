@@ -22,6 +22,8 @@ interface ThemeTokens {
   "--status-impasse-text": string;
   "--status-adjourned-bg": string;
   "--status-adjourned-text": string;
+  "--status-mediators-proposal-bg": string;
+  "--status-mediators-proposal-text": string;
   "--speculative-bg": string;
   "--speculative-border": string;
   "--speculative-text": string;
@@ -50,6 +52,8 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     "--status-impasse-text": "#991b1b",
     "--status-adjourned-bg": "#fef3c7",
     "--status-adjourned-text": "#92400e",
+    "--status-mediators-proposal-bg": "#ede9fe",
+    "--status-mediators-proposal-text": "#5b21b6",
     "--speculative-bg": "#fffbeb",
     "--speculative-border": "#f59e0b",
     "--speculative-text": "#92400e",
@@ -76,6 +80,8 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     "--status-impasse-text": "#fca5a5",
     "--status-adjourned-bg": "#78350f",
     "--status-adjourned-text": "#fcd34d",
+    "--status-mediators-proposal-bg": "#2e1065",
+    "--status-mediators-proposal-text": "#c4b5fd",
     "--speculative-bg": "#422006",
     "--speculative-border": "#d97706",
     "--speculative-text": "#fcd34d",
@@ -102,6 +108,8 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     "--status-impasse-text": "#dc322f",
     "--status-adjourned-bg": "#f0e8d5",
     "--status-adjourned-text": "#b58900",
+    "--status-mediators-proposal-bg": "#e8e0f0",
+    "--status-mediators-proposal-text": "#6c71c4",
     "--speculative-bg": "#f5efc9",
     "--speculative-border": "#b58900",
     "--speculative-text": "#b58900",
@@ -128,6 +136,8 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     "--status-impasse-text": "#dc322f",
     "--status-adjourned-bg": "#5c4a00",
     "--status-adjourned-text": "#b58900",
+    "--status-mediators-proposal-bg": "#2a2050",
+    "--status-mediators-proposal-text": "#6c71c4",
     "--speculative-bg": "#3b3000",
     "--speculative-border": "#b58900",
     "--speculative-text": "#b58900",
@@ -154,6 +164,8 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     "--status-impasse-text": "#bf616a",
     "--status-adjourned-bg": "#f0e8d5",
     "--status-adjourned-text": "#d08770",
+    "--status-mediators-proposal-bg": "#e0dff0",
+    "--status-mediators-proposal-text": "#b48ead",
     "--speculative-bg": "#f5efd9",
     "--speculative-border": "#ebcb8b",
     "--speculative-text": "#d08770",
@@ -180,6 +192,8 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     "--status-impasse-text": "#bf616a",
     "--status-adjourned-bg": "#593e2e",
     "--status-adjourned-text": "#d08770",
+    "--status-mediators-proposal-bg": "#3d2e4a",
+    "--status-mediators-proposal-text": "#b48ead",
     "--speculative-bg": "#3d3526",
     "--speculative-border": "#ebcb8b",
     "--speculative-text": "#ebcb8b",

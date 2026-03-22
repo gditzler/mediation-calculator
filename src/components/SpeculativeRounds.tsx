@@ -36,7 +36,11 @@ export function SpeculativeRounds({
     offer?: number;
     bracket_high?: number;
     bracket_low?: number;
-    bracket_proposed_by?: "plaintiff" | "defendant";
+    bracket_proposed_by?: "plaintiff" | "defendant" | "both";
+    demand_bracket_low?: number;
+    demand_bracket_high?: number;
+    offer_bracket_low?: number;
+    offer_bracket_high?: number;
   }) => {
     try {
       const input: AddRoundInput = {
@@ -137,31 +141,27 @@ export function SpeculativeRounds({
             {formatTime(round.created_at)}
           </div>
           <div className="text-right font-medium italic" style={{ color: "var(--demand)" }}>
-            {round.round_type === "standard"
-              ? formatCurrency(round.demand)
-              : formatCurrency(round.bracket_high)}
+            {formatCurrency(round.demand)}
+            {round.round_type === "bracket" && (round.bracket_proposed_by === "plaintiff" || round.bracket_proposed_by === "both") && (
+              <span className="ml-1 text-xs" style={{ color: "var(--text-muted)" }}>B</span>
+            )}
           </div>
           <div className="text-right font-medium italic" style={{ color: "var(--offer)" }}>
-            {round.round_type === "standard"
-              ? formatCurrency(round.offer)
-              : formatCurrency(round.bracket_low)}
+            {formatCurrency(round.offer)}
+            {round.round_type === "bracket" && (round.bracket_proposed_by === "defendant" || round.bracket_proposed_by === "both") && (
+              <span className="ml-1 text-xs" style={{ color: "var(--text-muted)" }}>B</span>
+            )}
           </div>
           <div className="text-right font-semibold italic">
             {formatCurrency(round.midpoint)}
           </div>
           <div className="text-right font-medium italic" style={{ color: "var(--text-muted)" }}>
-            {round.round_type === "standard"
-              ? round.demand != null && round.offer != null
-                ? formatCurrency(round.demand - round.offer)
-                : "—"
-              : round.bracket_high != null && round.bracket_low != null
-                ? formatCurrency(round.bracket_high - round.bracket_low)
-                : "—"}
+            {round.demand != null && round.offer != null
+              ? formatCurrency(round.demand - round.offer)
+              : "—"}
           </div>
           <div className="text-right font-medium italic" style={{ color: "var(--text-muted)" }}>
-            {round.round_type === "standard"
-              ? formatRatio(round.demand, round.offer)
-              : formatRatio(round.bracket_high, round.bracket_low)}
+            {formatRatio(round.demand, round.offer)}
           </div>
           <div className="flex gap-2 justify-end">
             <button

@@ -91,6 +91,7 @@ export function LandingPage() {
           <option value="settled">Settled</option>
           <option value="impasse">Impasse</option>
           <option value="adjourned">Adjourned</option>
+          <option value="mediators_proposal">Mediator's Proposal</option>
         </select>
         <button
           className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white"

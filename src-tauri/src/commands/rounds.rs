@@ -31,19 +31,11 @@ pub fn add_round(
         }
     }
 
-    // Compute midpoint based on round type
-    let midpoint = match input.round_type.as_str() {
-        "bracket" => {
-            let high = input.bracket_high.unwrap_or(0.0);
-            let low = input.bracket_low.unwrap_or(0.0);
-            calculations::compute_midpoint_bracket(high, low)
-        }
-        _ => {
-            let demand = input.demand.unwrap_or(0.0);
-            let offer = input.offer.unwrap_or(0.0);
-            calculations::compute_midpoint_standard(demand, offer)
-        }
-    };
+    // Compute midpoint from demand/offer (bracket rounds now send
+    // the bracket midpoint as the demand or offer value)
+    let demand = input.demand.unwrap_or(0.0);
+    let offer = input.offer.unwrap_or(0.0);
+    let midpoint = calculations::compute_midpoint_standard(demand, offer);
 
     // Determine round_number: max existing + 1
     let existing_rounds = db

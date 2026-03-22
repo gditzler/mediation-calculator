@@ -1,4 +1,4 @@
-export type MediationStatus = "in_progress" | "settled" | "impasse" | "adjourned";
+export type MediationStatus = "in_progress" | "settled" | "impasse" | "adjourned" | "mediators_proposal";
 
 export interface Mediation {
   id: string;
@@ -33,7 +33,7 @@ export interface Round {
   offer: number | null;
   bracket_high: number | null;
   bracket_low: number | null;
-  bracket_proposed_by: "plaintiff" | "defendant" | null;
+  bracket_proposed_by: "plaintiff" | "defendant" | "both" | null;
   midpoint: number;
   is_speculative: boolean;
   branch_from_round: number | null;
@@ -47,7 +47,11 @@ export interface AddRoundInput {
   offer?: number;
   bracket_high?: number;
   bracket_low?: number;
-  bracket_proposed_by?: "plaintiff" | "defendant";
+  bracket_proposed_by?: "plaintiff" | "defendant" | "both";
+  demand_bracket_low?: number;
+  demand_bracket_high?: number;
+  offer_bracket_low?: number;
+  offer_bracket_high?: number;
   is_speculative: boolean;
   branch_from_round?: number;
 }

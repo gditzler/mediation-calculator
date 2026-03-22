@@ -3,6 +3,7 @@ const statusConfig: Record<string, { label: string; bgVar: string; textVar: stri
   settled: { label: "Settled", bgVar: "--status-settled-bg", textVar: "--status-settled-text" },
   impasse: { label: "Impasse", bgVar: "--status-impasse-bg", textVar: "--status-impasse-text" },
   adjourned: { label: "Adjourned", bgVar: "--status-adjourned-bg", textVar: "--status-adjourned-text" },
+  mediators_proposal: { label: "Mediator's Proposal", bgVar: "--status-mediators-proposal-bg", textVar: "--status-mediators-proposal-text" },
 };
 
 interface StatusBadgeProps {
