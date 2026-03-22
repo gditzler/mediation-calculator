@@ -255,7 +255,20 @@ pub fn respond_to_bracket(
             );
         }
     }
-    // If accepted, the round stays incomplete (one side null) but is marked as accepted
+
+    if input.response == "accepted" {
+        // Accepted bracket: midpoint carries forward from previous round
+        let all_rounds = db
+            .get_rounds(&updated.mediation_id)
+            .map_err(|e| e.to_string())?;
+        let prev = all_rounds
+            .iter()
+            .filter(|r| !r.is_speculative && r.round_number < updated.round_number && r.midpoint != 0.0)
+            .last();
+        if let Some(prev_round) = prev {
+            updated.midpoint = prev_round.midpoint;
+        }
+    }
 
     db.update_round(&updated).map_err(|e| e.to_string())?;
     Ok(updated)
