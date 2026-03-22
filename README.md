@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/mediation-calculator-icon-192.png" alt="Gladice logo" width="128" />
+</p>
+
 # Mediation App
 
 A desktop app for tracking negotiation rounds (demands, offers, brackets) and computing midpoints and variations.
