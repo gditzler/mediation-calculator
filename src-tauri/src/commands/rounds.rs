@@ -167,8 +167,12 @@ pub fn add_move(
         db.add_round(&round).map_err(|e| e.to_string())?;
         Ok(round)
     } else {
-        // Offer: find latest incomplete round (has demand but no offer)
-        let incomplete = committed.iter().rev().find(|r| r.demand.is_some() && r.offer.is_none());
+        // Offer: find latest incomplete round (has demand but no offer, and not an accepted bracket)
+        let incomplete = committed.iter().rev().find(|r| {
+            r.demand.is_some()
+                && r.offer.is_none()
+                && r.bracket_response.as_deref() != Some("accepted")
+        });
 
         if let Some(existing) = incomplete {
             // Update existing round with offer

@@ -58,14 +58,11 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
   };
 
   const startEdit = (round: Round) => {
+    // Don't allow inline editing on incomplete rounds — use Add Move instead
+    if (round.demand == null || round.offer == null) return;
     setEditingId(round.id);
-    if (round.round_type === "standard") {
-      setEditVal1(round.demand?.toString() ?? "");
-      setEditVal2(round.offer?.toString() ?? "");
-    } else {
-      setEditVal1(round.bracket_high?.toString() ?? "");
-      setEditVal2(round.bracket_low?.toString() ?? "");
-    }
+    setEditVal1(round.demand?.toString() ?? "");
+    setEditVal2(round.offer?.toString() ?? "");
   };
 
   const saveEdit = async (round: Round) => {
@@ -76,10 +73,9 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
     try {
       const updated: Round = {
         ...round,
+        demand: v1,
+        offer: v2,
         midpoint: (v1 + v2) / 2,
-        ...(round.round_type === "standard"
-          ? { demand: v1, offer: v2 }
-          : { bracket_high: v1, bracket_low: v2 }),
       };
       await apiUpdateRound(updated);
       setEditingId(null);
