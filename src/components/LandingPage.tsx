@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { listMediations, createMediation } from "../api";
+import { listMediations, createMediation, deleteMediation } from "../api";
 import { useTabs } from "../context/TabContext";
 import { StatusBadge } from "./StatusBadge";
 import type { MediationSummary } from "../types";
@@ -46,6 +46,21 @@ export function LandingPage() {
       });
     } catch (err) {
       console.error("Failed to create mediation:", err);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, med: MediationSummary) => {
+    e.stopPropagation();
+    const label = med.plaintiff && med.defendant
+      ? `${med.plaintiff} v. ${med.defendant}`
+      : "this mediation";
+    if (!confirm(`Delete ${label}? This cannot be undone.`)) return;
+    try {
+      await deleteMediation(med.id);
+      dispatch({ type: "CLOSE_TAB", tabId: med.id });
+      setMediations((prev) => prev.filter((m) => m.id !== med.id));
+    } catch (err) {
+      console.error("Failed to delete mediation:", err);
     }
   };
 
@@ -106,7 +121,7 @@ export function LandingPage() {
       <div
         className="grid px-4 py-2 text-xs font-semibold uppercase tracking-wide"
         style={{
-          gridTemplateColumns: "2fr 2fr 1.5fr 1fr 1fr",
+          gridTemplateColumns: "2fr 2fr 1.5fr 1fr 1fr 0.5fr",
           color: "var(--text-muted)",
         }}
       >
@@ -115,6 +130,7 @@ export function LandingPage() {
         <div>Mediator</div>
         <div>Status</div>
         <div>Last Updated</div>
+        <div></div>
       </div>
 
       {/* Rows */}
@@ -123,7 +139,7 @@ export function LandingPage() {
           key={med.id}
           className="grid px-4 py-3.5 rounded-lg mb-1.5 text-sm cursor-pointer"
           style={{
-            gridTemplateColumns: "2fr 2fr 1.5fr 1fr 1fr",
+            gridTemplateColumns: "2fr 2fr 1.5fr 1fr 1fr 0.5fr",
             background: "var(--bg-card)",
             border: "1px solid var(--border)",
           }}
@@ -137,6 +153,16 @@ export function LandingPage() {
           </div>
           <div style={{ color: "var(--text-muted)" }}>
             {formatDate(med.updated_at)}
+          </div>
+          <div className="flex justify-end">
+            <button
+              className="text-xs px-2 py-1 rounded opacity-40 hover:opacity-100"
+              style={{ color: "var(--demand)" }}
+              title="Delete mediation"
+              onClick={(e) => handleDelete(e, med)}
+            >
+              ✕
+            </button>
           </div>
         </div>
       ))}
