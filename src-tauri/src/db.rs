@@ -292,6 +292,36 @@ impl Database {
         Ok(())
     }
 
+    pub fn get_round_by_id(&self, id: &str) -> SqlResult<Round> {
+        let conn = self.conn.lock().unwrap();
+        conn.query_row(
+            "SELECT id, mediation_id, round_number, round_type, demand, offer, bracket_high, bracket_low, bracket_proposed_by, midpoint, is_speculative, branch_from_round, created_at, demand_time, offer_time, bracket_response
+             FROM rounds WHERE id = ?1",
+            params![id],
+            |row| {
+                let is_spec: i32 = row.get(10)?;
+                Ok(Round {
+                    id: row.get(0)?,
+                    mediation_id: row.get(1)?,
+                    round_number: row.get(2)?,
+                    round_type: row.get(3)?,
+                    demand: row.get(4)?,
+                    offer: row.get(5)?,
+                    bracket_high: row.get(6)?,
+                    bracket_low: row.get(7)?,
+                    bracket_proposed_by: row.get(8)?,
+                    midpoint: row.get(9)?,
+                    is_speculative: is_spec != 0,
+                    branch_from_round: row.get(11)?,
+                    created_at: row.get(12)?,
+                    demand_time: row.get(13)?,
+                    offer_time: row.get(14)?,
+                    bracket_response: row.get(15)?,
+                })
+            },
+        )
+    }
+
     pub fn promote_speculative_rounds(
         &self,
         mediation_id: &str,

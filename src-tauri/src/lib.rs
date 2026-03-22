@@ -27,6 +27,8 @@ pub fn run() {
             commands::mediations::list_mediations,
             commands::mediations::autocomplete_field,
             commands::rounds::add_round,
+            commands::rounds::add_move,
+            commands::rounds::respond_to_bracket,
             commands::rounds::get_rounds,
             commands::rounds::update_round,
             commands::rounds::delete_round,
