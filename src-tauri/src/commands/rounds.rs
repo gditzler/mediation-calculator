@@ -62,7 +62,10 @@ pub fn add_round(
         midpoint,
         is_speculative: input.is_speculative,
         branch_from_round: input.branch_from_round,
-        created_at: now,
+        created_at: now.clone(),
+        demand_time: now.clone(),
+        offer_time: now.clone(),
+        bracket_response: None,
     };
 
     db.add_round(&round).map_err(|e| e.to_string())?;

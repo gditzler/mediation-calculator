@@ -31,6 +31,9 @@ pub struct Round {
     pub is_speculative: bool,
     pub branch_from_round: Option<i32>,
     pub created_at: String,
+    pub demand_time: String,
+    pub offer_time: String,
+    pub bracket_response: Option<String>,
 }
 
 #[allow(dead_code)]

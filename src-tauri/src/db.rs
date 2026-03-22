@@ -201,8 +201,8 @@ impl Database {
     pub fn add_round(&self, round: &Round) -> SqlResult<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
-            "INSERT INTO rounds (id, mediation_id, round_number, round_type, demand, offer, bracket_high, bracket_low, bracket_proposed_by, midpoint, is_speculative, branch_from_round, created_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
+            "INSERT INTO rounds (id, mediation_id, round_number, round_type, demand, offer, bracket_high, bracket_low, bracket_proposed_by, midpoint, is_speculative, branch_from_round, created_at, demand_time, offer_time, bracket_response)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
             params![
                 round.id,
                 round.mediation_id,
@@ -217,6 +217,9 @@ impl Database {
                 round.is_speculative as i32,
                 round.branch_from_round,
                 round.created_at,
+                round.demand_time,
+                round.offer_time,
+                round.bracket_response,
             ],
         )?;
         Ok(())
@@ -225,7 +228,7 @@ impl Database {
     pub fn get_rounds(&self, mediation_id: &str) -> SqlResult<Vec<Round>> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
-            "SELECT id, mediation_id, round_number, round_type, demand, offer, bracket_high, bracket_low, bracket_proposed_by, midpoint, is_speculative, branch_from_round, created_at
+            "SELECT id, mediation_id, round_number, round_type, demand, offer, bracket_high, bracket_low, bracket_proposed_by, midpoint, is_speculative, branch_from_round, created_at, demand_time, offer_time, bracket_response
              FROM rounds WHERE mediation_id = ?1
              ORDER BY is_speculative ASC, round_number ASC",
         )?;
@@ -245,6 +248,9 @@ impl Database {
                 is_speculative: is_spec != 0,
                 branch_from_round: row.get(11)?,
                 created_at: row.get(12)?,
+                demand_time: row.get(13)?,
+                offer_time: row.get(14)?,
+                bracket_response: row.get(15)?,
             })
         })?;
 
@@ -258,8 +264,8 @@ impl Database {
     pub fn update_round(&self, round: &Round) -> SqlResult<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
-            "UPDATE rounds SET round_number = ?1, round_type = ?2, demand = ?3, offer = ?4, bracket_high = ?5, bracket_low = ?6, bracket_proposed_by = ?7, midpoint = ?8, is_speculative = ?9, branch_from_round = ?10
-             WHERE id = ?11",
+            "UPDATE rounds SET round_number = ?1, round_type = ?2, demand = ?3, offer = ?4, bracket_high = ?5, bracket_low = ?6, bracket_proposed_by = ?7, midpoint = ?8, is_speculative = ?9, branch_from_round = ?10, demand_time = ?11, offer_time = ?12, bracket_response = ?13
+             WHERE id = ?14",
             params![
                 round.round_number,
                 round.round_type,
@@ -271,6 +277,9 @@ impl Database {
                 round.midpoint,
                 round.is_speculative as i32,
                 round.branch_from_round,
+                round.demand_time,
+                round.offer_time,
+                round.bracket_response,
                 round.id,
             ],
         )?;
