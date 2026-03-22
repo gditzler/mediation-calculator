@@ -138,6 +138,7 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
         rounds={rounds}
         onRoundsChange={load}
         onStartWhatIf={() => setShowWhatIf(true)}
+        mediationName={title}
       />
 
       {(showWhatIf || speculativeRounds.length > 0) && (

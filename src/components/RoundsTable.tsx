@@ -2,15 +2,17 @@ import { useState, useRef } from "react";
 import { addMove, respondToBracket, updateRound as apiUpdateRound, deleteRound } from "../api";
 import { MoveInputRow } from "./MoveInputRow";
 import type { Round } from "../types";
+import { exportRoundsToXlsx } from "../utils/exportTable";
 
 interface RoundsTableProps {
   mediationId: string;
   rounds: Round[];
   onRoundsChange: () => void;
   onStartWhatIf?: () => void;
+  mediationName: string;
 }
 
-export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf }: RoundsTableProps) {
+export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf, mediationName }: RoundsTableProps) {
   const [addingMove, setAddingMove] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editVal1, setEditVal1] = useState("");
@@ -130,6 +132,14 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
           Negotiation Rounds
         </span>
         <div className="flex gap-2">
+          <button
+            className="px-3 py-1 rounded-md text-xs"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+            onClick={() => exportRoundsToXlsx(rounds, mediationName)}
+            title="Export rounds to Excel"
+          >
+            Export
+          </button>
           <button
             className="px-3 py-1 rounded-md text-xs"
             style={{
