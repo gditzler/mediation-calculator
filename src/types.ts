@@ -38,6 +38,9 @@ export interface Round {
   is_speculative: boolean;
   branch_from_round: number | null;
   created_at: string;
+  demand_time: string;
+  offer_time: string;
+  bracket_response: "accepted" | "declined" | null;
 }
 
 export interface AddRoundInput {
@@ -54,6 +57,21 @@ export interface AddRoundInput {
   offer_bracket_high?: number;
   is_speculative: boolean;
   branch_from_round?: number;
+}
+
+export interface AddMoveInput {
+  mediation_id: string;
+  move_type: "demand" | "offer";
+  amount: number;
+  is_bracket: boolean;
+  bracket_low?: number;
+  bracket_high?: number;
+}
+
+export interface BracketResponseInput {
+  round_id: string;
+  response: "accepted" | "declined";
+  counter_amount?: number;
 }
 
 export interface Variation {

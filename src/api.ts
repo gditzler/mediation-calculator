@@ -4,6 +4,8 @@ import type {
   MediationSummary,
   Round,
   AddRoundInput,
+  AddMoveInput,
+  BracketResponseInput,
   Variation,
 } from "./types";
 
@@ -70,6 +72,12 @@ export const getVariations = (
     currentDemand,
     count,
   });
+
+export const addMove = (input: AddMoveInput) =>
+  invoke<Round>("add_move", { input });
+
+export const respondToBracket = (input: BracketResponseInput) =>
+  invoke<Round>("respond_to_bracket", { input });
 
 // Settings
 export const getSetting = (key: string) =>
