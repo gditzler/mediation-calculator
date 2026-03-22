@@ -1,0 +1,3 @@
+ALTER TABLE rounds ADD COLUMN demand_time TEXT NOT NULL DEFAULT '';
+ALTER TABLE rounds ADD COLUMN offer_time TEXT NOT NULL DEFAULT '';
+ALTER TABLE rounds ADD COLUMN bracket_response TEXT;

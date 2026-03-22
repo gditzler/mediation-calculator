@@ -25,6 +25,8 @@ impl Database {
         conn.execute_batch(sql)?;
         // 002: add mediation_date column to existing databases
         let _ = conn.execute_batch(include_str!("../migrations/002_add_mediation_date.sql"));
+        // 003: add per-side timestamps and bracket_response to rounds
+        let _ = conn.execute_batch(include_str!("../migrations/003_add_move_timestamps.sql"));
         Ok(())
     }
 
