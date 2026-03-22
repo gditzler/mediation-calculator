@@ -12,6 +12,7 @@ pub fn compute_midpoint_standard(demand: f64, offer: f64) -> f64 {
 }
 
 /// Bracket midpoint: (high + low) / 2
+#[allow(dead_code)]
 pub fn compute_midpoint_bracket(high: f64, low: f64) -> f64 {
     (high + low) / 2.0
 }
