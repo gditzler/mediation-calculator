@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
-import { addRound, updateRound as apiUpdateRound, deleteRound } from "../api";
-import { RoundInputRow } from "./RoundInputRow";
-import type { Round, AddRoundInput } from "../types";
+import { addMove, respondToBracket, updateRound as apiUpdateRound, deleteRound } from "../api";
+import { MoveInputRow } from "./MoveInputRow";
+import type { Round } from "../types";
 
 interface RoundsTableProps {
   mediationId: string;
@@ -11,7 +11,7 @@ interface RoundsTableProps {
 }
 
 export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf }: RoundsTableProps) {
-  const [addingRound, setAddingRound] = useState(false);
+  const [addingMove, setAddingMove] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editVal1, setEditVal1] = useState("");
   const [editVal2, setEditVal2] = useState("");
@@ -23,34 +23,37 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
     (r) => r.round_type === "standard" && r.demand != null && r.offer != null
   );
 
-  const handleAdd = async (data: {
-    round_type: "standard" | "bracket";
-    demand?: number;
-    offer?: number;
-    bracket_high?: number;
+  const getExpectedMove = (): "demand" | "offer" => {
+    if (committedRounds.length === 0) return "demand";
+    const latest = committedRounds[committedRounds.length - 1];
+    // If latest round is incomplete (has demand but no offer)
+    if (latest.demand != null && latest.offer == null) {
+      // If it's an accepted bracket, the proposer goes again
+      if (latest.bracket_response === "accepted") {
+        return latest.bracket_proposed_by === "plaintiff" ? "demand" : "offer";
+      }
+      return "offer"; // Normal flow: need the other side
+    }
+    // Round complete, next is a demand
+    return "demand";
+  };
+
+  const handleAddMove = async (data: {
+    move_type: "demand" | "offer";
+    amount: number;
+    is_bracket: boolean;
     bracket_low?: number;
-    bracket_proposed_by?: "plaintiff" | "defendant" | "both";
-    demand_bracket_low?: number;
-    demand_bracket_high?: number;
-    offer_bracket_low?: number;
-    offer_bracket_high?: number;
+    bracket_high?: number;
   }) => {
     try {
-      const input: AddRoundInput = {
+      await addMove({
         mediation_id: mediationId,
-        round_type: data.round_type,
-        demand: data.demand,
-        offer: data.offer,
-        bracket_high: data.bracket_high,
-        bracket_low: data.bracket_low,
-        bracket_proposed_by: data.bracket_proposed_by,
-        is_speculative: false,
-      };
-      await addRound(input);
-      setAddingRound(false);
+        ...data,
+      });
+      setAddingMove(false);
       onRoundsChange();
     } catch (err) {
-      console.error("Failed to add round:", err);
+      console.error("Failed to add move:", err);
     }
   };
 
@@ -145,9 +148,9 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
           <button
             className="px-3 py-1 rounded-md text-xs"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
-            onClick={() => setAddingRound(true)}
+            onClick={() => setAddingMove(true)}
           >
-            + Add Round
+            + Add Move
           </button>
         </div>
       </div>
@@ -156,13 +159,12 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
       <div
         className="grid px-5 py-2 text-xs font-semibold uppercase tracking-wide"
         style={{
-          gridTemplateColumns: "0.5fr 1fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
+          gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
           color: "var(--text-muted)",
           borderBottom: "1px solid var(--border)",
         }}
       >
         <div>Round</div>
-        <div className="text-right">Time</div>
         <div className="text-right">Demand / High</div>
         <div className="text-right">Offer / Low</div>
         <div className="text-right">Midpoint</div>
@@ -177,7 +179,7 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
           key={round.id}
           className="grid px-5 py-3 text-sm items-center"
           style={{
-            gridTemplateColumns: "0.5fr 1fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
+            gridTemplateColumns: "0.5fr 1.5fr 1.5fr 1.5fr 1fr 1fr 0.5fr",
             borderBottom: "1px solid var(--border-light)",
           }}
           onDoubleClick={() => startEdit(round)}
@@ -189,10 +191,6 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
                 B({round.bracket_proposed_by?.[0].toUpperCase()})
               </span>
             )}
-          </div>
-
-          <div className="text-right text-xs" style={{ color: "var(--text-muted)" }}>
-            {formatTime(round.created_at)}
           </div>
 
           {editingId === round.id ? (
@@ -251,18 +249,47 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
             <>
               <div className="text-right font-medium" style={{ color: "var(--demand)" }}>
                 {formatCurrency(round.demand)}
+                {round.demand_time && (
+                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    {formatTime(round.demand_time)}
+                  </div>
+                )}
                 {round.round_type === "bracket" && (round.bracket_proposed_by === "plaintiff" || round.bracket_proposed_by === "both") && (
-                  <span className="ml-1 text-xs" style={{ color: "var(--text-muted)" }} title={`Bracket: ${formatCurrency(round.bracket_low)} – ${formatCurrency(round.bracket_high)}`}>B</span>
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }} title={`Bracket: ${formatCurrency(round.bracket_low)} – ${formatCurrency(round.bracket_high)}`}>B</span>
                 )}
               </div>
               <div className="text-right font-medium" style={{ color: "var(--offer)" }}>
                 {formatCurrency(round.offer)}
+                {round.offer_time && (
+                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    {formatTime(round.offer_time)}
+                  </div>
+                )}
                 {round.round_type === "bracket" && (round.bracket_proposed_by === "defendant" || round.bracket_proposed_by === "both") && (
-                  <span className="ml-1 text-xs" style={{ color: "var(--text-muted)" }} title={`Bracket: ${formatCurrency(round.bracket_low)} – ${formatCurrency(round.bracket_high)}`}>B</span>
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }} title={`Bracket: ${formatCurrency(round.bracket_low)} – ${formatCurrency(round.bracket_high)}`}>B</span>
+                )}
+                {round.round_type === "bracket" && round.bracket_response == null && (round.demand == null || round.offer == null) && (
+                  <div className="flex gap-1 text-xs mt-1">
+                    <button
+                      style={{ color: "var(--status-settled-text)" }}
+                      onClick={async () => {
+                        await respondToBracket({ round_id: round.id, response: "accepted" });
+                        onRoundsChange();
+                      }}
+                    >Accept</button>
+                    <button
+                      style={{ color: "var(--demand)" }}
+                      onClick={() => {
+                        respondToBracket({ round_id: round.id, response: "declined" }).then(() => onRoundsChange());
+                      }}
+                    >Decline</button>
+                  </div>
                 )}
               </div>
               <div className="text-right font-semibold">
-                {formatCurrency(round.midpoint)}
+                {round.demand != null && round.offer != null
+                  ? formatCurrency(round.midpoint)
+                  : "—"}
               </div>
               <div className="text-right font-medium" style={{ color: "var(--text-muted)" }}>
                 {round.demand != null && round.offer != null
@@ -270,7 +297,9 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
                   : "—"}
               </div>
               <div className="text-right font-medium" style={{ color: "var(--text-muted)" }}>
-                {formatRatio(round.demand, round.offer)}
+                {round.demand != null && round.offer != null
+                  ? formatRatio(round.demand, round.offer)
+                  : "—"}
               </div>
               <div></div>
             </>
@@ -278,22 +307,21 @@ export function RoundsTable({ mediationId, rounds, onRoundsChange, onStartWhatIf
         </div>
       ))}
 
-      {/* Add round input */}
-      {addingRound && (
+      {/* Add move input */}
+      {addingMove && (
         <div className="px-5 pb-3">
-          <RoundInputRow
+          <MoveInputRow
+            expectedMove={getExpectedMove()}
             allowBracket={hasStandardWithBoth}
-            isSpeculative={false}
-            branchFromRound={null}
-            onSubmit={handleAdd}
-            onCancel={() => setAddingRound(false)}
+            onSubmit={handleAddMove}
+            onCancel={() => setAddingMove(false)}
           />
         </div>
       )}
 
-      {committedRounds.length === 0 && !addingRound && (
+      {committedRounds.length === 0 && !addingMove && (
         <div className="px-5 py-8 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-          No rounds yet. Click "+ Add Round" to begin.
+          No moves yet. Click "+ Add Move" to begin.
         </div>
       )}
     </div>
