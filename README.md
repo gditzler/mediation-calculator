@@ -15,6 +15,7 @@ Built with [Tauri v2](https://v2.tauri.app/), React, TypeScript, and SQLite.
 - **Speculative rounds** — Explore what-if scenarios that can be promoted to real rounds or discarded
 - **Variations table** — Generate demand/offer pairs around a midpoint to visualize negotiation options
 - **Convergence chart** — Visualize how demands and offers converge over rounds
+- **Data export** — Export the rounds table to XLSX or the convergence chart to PNG (transparent background)
 - **Notes** — Markdown-enabled notes per mediation with autosave
 - **Multi-tab workspace** — Work on multiple mediations simultaneously
 - **Themes** — Six built-in themes

@@ -41,11 +41,13 @@ React 18 + TypeScript + Tailwind CSS 4 + Vite. No router — uses a tab-based na
 - **`types.ts`** — Shared TypeScript interfaces (`Mediation`, `Round`, `AddRoundInput`, `Variation`, `Tab`, etc.)
 - **`context/TabContext.tsx`** — Tab state via `useReducer` with actions: `OPEN_MEDIATION`, `CLOSE_TAB`, `SET_ACTIVE`, `UPDATE_LABEL`
 - **`context/ThemeContext.tsx`** — Theme persistence via backend `get_setting`/`set_setting` commands
+- **`utils/exportTable.ts`** — XLSX export: builds workbook from committed rounds via SheetJS, saves via native dialog
+- **`utils/exportChart.ts`** — PNG export: clones chart SVG, replaces theme colors with fixed presentation-safe colors, renders to canvas with transparent background
 - **`components/MediationWorkspace.tsx`** — Main workspace: metadata panel, rounds table, speculative rounds, convergence chart, variations table, notes editor
 
 ### Backend (src-tauri/)
 
-Rust with Tauri v2, rusqlite (bundled SQLite), serde, chrono, uuid.
+Rust with Tauri v2, rusqlite (bundled SQLite), serde, chrono, uuid. Tauri plugins: `tauri-plugin-dialog` (native OS save dialogs), `tauri-plugin-fs` (file system access).
 
 - **`lib.rs`** — App setup: initializes SQLite database in app data dir, registers all Tauri commands
 - **`db.rs`** — Database layer: all SQL queries via rusqlite with `Mutex<Connection>`, WAL mode, foreign keys enabled
