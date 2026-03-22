@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is this?
 
-This is a **mediation app** — a Tauri v2 desktop app for tracking negotiation rounds (demands, offers, brackets) and computing midpoints/variations. It uses a React/TypeScript frontend with a Rust backend backed by SQLite.
+This is **Gladice**, a **mediation app** — a Tauri v2 desktop app for tracking negotiation rounds (demands, offers, brackets) and computing midpoints/variations. It uses a React/TypeScript frontend with a Rust backend backed by SQLite.
+
+User-facing setup and features are summarized in **`README.md`**.
 
 ## Build and Development Commands
 
@@ -93,3 +95,7 @@ SQLite stored at the OS app data directory (`tauri::path::app_data_dir()`). File
 - **Metadata fields**: 1-second debounce, updates tab label as "Plaintiff v. Defendant"
 - **Notes editor**: 2-second debounce
 - **Autocomplete fields**: 200ms debounce, backend validates field names against a whitelist
+
+## License
+
+Released under the [MIT License](LICENSE).
