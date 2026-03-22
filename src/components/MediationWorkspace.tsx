@@ -126,17 +126,6 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
           />
         </div>
         <div className="flex gap-2">
-          <button
-            className="px-4 py-1.5 rounded-md text-sm"
-            style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border)",
-              color: "var(--text-secondary)",
-            }}
-            disabled
-          >
-            Export
-          </button>
         </div>
       </div>
 
