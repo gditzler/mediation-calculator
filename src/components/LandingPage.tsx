@@ -18,6 +18,7 @@ export function LandingPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const { dispatch } = useTabs();
 
   useEffect(() => {
@@ -49,18 +50,18 @@ export function LandingPage() {
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent, med: MediationSummary) => {
+  const handleDeleteClick = (e: React.MouseEvent, medId: string) => {
     e.stopPropagation();
-    const label = med.plaintiff && med.defendant
-      ? `${med.plaintiff} v. ${med.defendant}`
-      : "this mediation";
-    if (!confirm(`Delete ${label}? This cannot be undone.`)) return;
-    try {
-      await deleteMediation(med.id);
-      dispatch({ type: "CLOSE_TAB", tabId: med.id });
-      setMediations((prev) => prev.filter((m) => m.id !== med.id));
-    } catch (err) {
-      console.error("Failed to delete mediation:", err);
+    if (confirmDeleteId === medId) {
+      // Second click — actually delete
+      deleteMediation(medId).then(() => {
+        dispatch({ type: "CLOSE_TAB", tabId: medId });
+        setMediations((prev) => prev.filter((m) => m.id !== medId));
+        setConfirmDeleteId(null);
+      }).catch((err) => console.error("Failed to delete mediation:", err));
+    } else {
+      // First click — show confirm state
+      setConfirmDeleteId(medId);
     }
   };
 
@@ -155,14 +156,24 @@ export function LandingPage() {
             {formatDate(med.updated_at)}
           </div>
           <div className="flex justify-end">
-            <button
-              className="text-xs px-2 py-1 rounded opacity-40 hover:opacity-100"
-              style={{ color: "var(--demand)" }}
-              title="Delete mediation"
-              onClick={(e) => handleDelete(e, med)}
-            >
-              ✕
-            </button>
+            {confirmDeleteId === med.id ? (
+              <button
+                className="text-xs px-2 py-1 rounded font-semibold"
+                style={{ color: "var(--demand)" }}
+                onClick={(e) => handleDeleteClick(e, med.id)}
+              >
+                Confirm?
+              </button>
+            ) : (
+              <button
+                className="text-xs px-2 py-1 rounded opacity-40 hover:opacity-100"
+                style={{ color: "var(--demand)" }}
+                title="Delete mediation"
+                onClick={(e) => handleDeleteClick(e, med.id)}
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
       ))}
