@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   ComposedChart,
   Line,
@@ -11,12 +12,16 @@ import {
   Cell,
 } from "recharts";
 import type { Round } from "../types";
+import { exportChartToPng } from "../utils/exportChart";
 
 interface ConvergenceChartProps {
   rounds: Round[];
+  mediationName: string;
 }
 
-export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
+export function ConvergenceChart({ rounds, mediationName }: ConvergenceChartProps) {
+  const chartRef = useRef<HTMLDivElement>(null);
+
   if (rounds.length === 0) return null;
 
   const committed = rounds.filter((r) => !r.is_speculative);
@@ -58,13 +63,24 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
       className="rounded-xl p-5"
       style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
     >
-      <div
-        className="text-sm font-semibold mb-4"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        Negotiation Convergence
+      <div className="flex items-center justify-between mb-4">
+        <span
+          className="text-sm font-semibold"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Negotiation Convergence
+        </span>
+        <button
+          className="px-3 py-1 rounded-md text-xs"
+          style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+          onClick={() => exportChartToPng(chartRef, mediationName)}
+          title="Export chart as PNG"
+        >
+          Export
+        </button>
       </div>
-      <ResponsiveContainer width="100%" height={250}>
+      <div ref={chartRef}>
+        <ResponsiveContainer width="100%" height={250}>
         <ComposedChart data={barData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
           <XAxis
@@ -128,6 +144,7 @@ export function ConvergenceChart({ rounds }: ConvergenceChartProps) {
           />
         </ComposedChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }

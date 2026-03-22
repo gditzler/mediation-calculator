@@ -153,7 +153,7 @@ export function MediationWorkspace({ mediationId, tabId }: MediationWorkspacePro
       )}
 
       {/* Convergence chart */}
-      <ConvergenceChart rounds={rounds} />
+      <ConvergenceChart rounds={rounds} mediationName={title} />
 
       {/* Bottom row: Variations + Notes */}
       <div className="grid grid-cols-2 gap-5">
